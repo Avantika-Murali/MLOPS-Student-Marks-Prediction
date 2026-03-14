@@ -13,12 +13,11 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    hours = float(request.form['hours'])  # get hours input
+    hours = float(request.form['hours'])
 
     prediction = model.predict([[hours]])
-    marks = prediction[0]
+    marks = float(prediction[0])
 
-    # pass fail logic
     if marks >= 40:
         result = "Pass"
     else:
@@ -26,9 +25,5 @@ def predict():
 
     return render_template(
         "index.html",
-        prediction_text=f"Predicted Marks: {round(marks,2)} - Result: {result}"
+        prediction_text=f"Study Hours: {hours} | Predicted Marks: {round(marks,2)} | Result: {result}"
     )
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
