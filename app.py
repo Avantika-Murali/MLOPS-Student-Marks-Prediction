@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request
 import os
 import pickle
-import numpy as np
 
 app = Flask(__name__)
 
+# load model
 model = pickle.load(open("model.pkl", "rb"))
 
 @app.route('/')
@@ -13,13 +13,21 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    features = [float(x) for x in request.form.values()]
-    final_features = [np.array(features)]
-    prediction = model.predict(final_features)
+    hours = float(request.form['hours'])  # get hours input
 
-    output = prediction[0]
+    prediction = model.predict([[hours]])
+    marks = prediction[0]
 
-    return render_template("index.html", prediction_text=f"Prediction: {output}")
+    # pass fail logic
+    if marks >= 40:
+        result = "Pass"
+    else:
+        result = "Fail"
+
+    return render_template(
+        "index.html",
+        prediction_text=f"Predicted Marks: {round(marks,2)} - Result: {result}"
+    )
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
