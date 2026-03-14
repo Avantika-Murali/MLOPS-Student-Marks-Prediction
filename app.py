@@ -1,24 +1,10 @@
-from flask import Flask, request, jsonify
-import pickle
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-model = pickle.load(open("model.pkl","rb"))
-
-@app.route("/")
+@app.route('/')
 def home():
-    return "ML Model Running"
-
-@app.route("/predict", methods=["POST"])
-def predict():
-    data = request.get_json()
-    hours = data["hours"]
-
-    prediction = model.predict([[hours]])
-
-    result = "Pass" if prediction[0]==1 else "Fail"
-
-    return jsonify({"prediction":result})
+    return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run()
